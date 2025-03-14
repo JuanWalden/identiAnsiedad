@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App de Reinterpretación de Síntomas de Ansiedad</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #4f46e5;
+            margin-bottom: 20px;
+        }
+        .info-box {
+            background-color: #eef2ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        select:focus, textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #4338ca;
+        }
+        .result-box {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 6px;
+        }
+        .symptom-box {
+            background-color: #f3f4f6;
+        }
+        .user-interpretation-box {
+            background-color: #fff7ed;
+            border-left: 4px solid #f59e0b;
+        }
+        .common-interpretation-box {
+            background-color: #eef2ff;
+            border-left: 4px solid #4f46e5;
+        }
+        .real-cause-box {
+            background-color: #ecfdf5;
+            border-left: 4px solid #10b981;
+        }
+        .reminder-box {
+            background-color: #eff6ff;
+        }
+        h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+        .symptom-box h3 {
+            color: #1f2937;
+        }
+        .user-interpretation-box h3 {
+            color: #92400e;
+        }
+        .common-interpretation-box h3 {
+            color: #3730a3;
+        }
+        .real-cause-box h3 {
+            color: #047857;
+        }
+        .reminder-box h3 {
+            color: #1e40af;
+        }
+        .disclaimer {
+            text-align: center;
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 30px;
+        }
+        #form-view, #results-view {
+            display: none;
+        }
+        .active {
+            display: block !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Reinterpretando Síntomas de Ansiedad</h1>
+        
+        <div class="info-box">
+            <p>Esta herramienta te ayuda a entender mejor los síntomas físicos de ansiedad. Selecciona el síntoma que estás experimentando, comparte lo que crees que significa, y descubre la explicación real.</p>
+        </div>
+
+        <!-- Formulario de entrada -->
+        <div id="form-view">
+            <div class="form-group">
+                <label for="symptom-select">¿Qué síntoma estás experimentando?</label>
+                <select id="symptom-select" required>
+                    <option value="">Selecciona un síntoma</option>
+                    <!-- Las opciones se cargarán con JavaScript -->
+                </select>
+            </div>
+            
+            <div id="interpretation-container" class="form-group" style="display: none;">
+                <label for="user-interpretation">¿Qué crees que significa este síntoma? ¿Qué te preocupa que pueda ser?</label>
+                <textarea id="user-interpretation" rows="3" placeholder="Escribe aquí tu interpretación..." required></textarea>
+            </div>
+            
+            <button id="submit-button" style="display: none;">Ver explicación</button>
+        </div>
+
+        <!-- Vista de resultados -->
+        <div id="results-view">
+            <div class="result-box symptom-box">
+                <h3>Tu síntoma:</h3>
+                <p id="result-symptom" style="font-weight: bold;"></p>
+            </div>
+            
+            <div class="result-box user-interpretation-box">
+                <h3>Tu interpretación:</h3>
+                <p id="result-user-interpretation"></p>
+            </div>
+            
+            <div class="result-box common-interpretation-box">
+                <h3>Interpretación común:</h3>
+                <p id="result-common-interpretation"></p>
+            </div>
+            
+            <div class="result-box real-cause-box">
+                <h3>Causa real:</h3>
+                <p id="result-real-cause"></p>
+            </div>
+            
+            <div class="result-box reminder-box">
+                <h3>Recuerda:</h3>
+                <p>Los síntomas de ansiedad, aunque incómodos, no son peligrosos. Son respuestas normales del cuerpo ante el estrés y la ansiedad.</p>
+            </div>
+            
+            <button id="reset-button">Consultar otro síntoma</button>
+        </div>
+
+        <div class="disclaimer">
+            <p>Esta herramienta es informativa y no sustituye la atención médica profesional.</p>
+            <p>Si experimentas síntomas graves o preocupantes, consulta con un profesional de la salud.</p>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos de síntomas
+        const symptomsData = [
+            {
+                id: 1,
+                symptom: "Taquicardia/palpitaciones",
+                commonInterpretation: "\"Estoy teniendo un ataque cardíaco\" \"Voy a morir\"",
+                realCause: "Respuesta natural del sistema nervioso simpático: aumento de adrenalina que prepara al cuerpo para \"luchar o huir\""
+            },
+            {
+                id: 2,
+                symptom: "Dificultad para respirar",
+                commonInterpretation: "\"Me voy a asfixiar\" \"No puedo respirar\"",
+                realCause: "Hiperventilación causada por respiración rápida y superficial que altera el equilibrio de oxígeno y CO2"
+            },
+            {
+                id: 3,
+                symptom: "Mareo o sensación de inestabilidad",
+                commonInterpretation: "\"Voy a desmayarme\" \"Tengo algo grave en el cerebro\"",
+                realCause: "Cambios en el flujo sanguíneo y la tensión arterial provocados por la hiperventilación"
+            },
+            {
+                id: 4,
+                symptom: "Opresión en el pecho",
+                commonInterpretation: "\"Estoy sufriendo un infarto\"",
+                realCause: "Tensión muscular en la zona torácica causada por el estrés y la respiración alterada"
+            },
+            {
+                id: 5,
+                symptom: "Sudoración",
+                commonInterpretation: "\"Todos notarán que estoy nervioso\" \"Es vergonzoso\"",
+                realCause: "Mecanismo natural de regulación térmica ante la activación del sistema nervioso simpático"
+            },
+            {
+                id: 6,
+                symptom: "Hormigueo en extremidades",
+                commonInterpretation: "\"Estoy teniendo un derrame cerebral\"",
+                realCause: "Resultado de la hiperventilación que altera los niveles de CO2 en sangre causando parestesia temporal"
+            },
+            {
+                id: 7,
+                symptom: "Tensión muscular/dolor",
+                commonInterpretation: "\"Tengo una enfermedad grave\"",
+                realCause: "Preparación muscular para la acción (respuesta de lucha-huida) y tensión prolongada por estrés"
+            },
+            {
+                id: 8,
+                symptom: "Nudo en la garganta",
+                commonInterpretation: "\"Me voy a ahogar\"",
+                realCause: "Tensión en los músculos de la garganta relacionada con la respuesta de estrés"
+            },
+            {
+                id: 9,
+                symptom: "Náuseas o molestias digestivas",
+                commonInterpretation: "\"Estoy enfermo\" \"Voy a vomitar en público\"",
+                realCause: "Redistribución sanguínea desde el sistema digestivo hacia músculos y órganos vitales"
+            },
+            {
+                id: 10,
+                symptom: "Sensación de irrealidad",
+                commonInterpretation: "\"Me estoy volviendo loco\" \"Voy a perder el control\"",
+                realCause: "Despersonalización/desrealización: mecanismo protector del cerebro ante el estrés extremo"
+            },
+            {
+                id: 11,
+                symptom: "Sensibilidad a la luz/sonido",
+                commonInterpretation: "\"Algo está mal en mi cerebro\"",
+                realCause: "Mayor estado de alerta sensorial (hipervigilancia) por la activación del sistema nervioso"
+            },
+            {
+                id: 12,
+                symptom: "Sofocos o escalofríos",
+                commonInterpretation: "\"Tengo fiebre\" \"Estoy enfermo\"",
+                realCause: "Alteraciones en la termorregulación corporal por la activación del sistema nervioso autónomo"
+            }
+        ];
+
+        // Referencias a elementos DOM
+        const formView = document.getElementById('form-view');
+        const resultsView = document.getElementById('results-view');
+        const symptomSelect = document.getElementById('symptom-select');
+        const interpretationContainer = document.getElementById('interpretation-container');
+        const userInterpretation = document.getElementById('user-interpretation');
+        const submitButton = document.getElementById('submit-button');
+        const resetButton = document.getElementById('reset-button');
+        
+        const resultSymptom = document.getElementById('result-symptom');
+        const resultUserInterpretation = document.getElementById('result-user-interpretation');
+        const resultCommonInterpretation = document.getElementById('result-common-interpretation');
+        const resultRealCause = document.getElementById('result-real-cause');
+
+        // Cargar opciones de síntomas
+        function loadSymptomOptions() {
+            symptomsData.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.symptom;
+                option.textContent = item.symptom;
+                symptomSelect.appendChild(option);
+            });
+        }
+
+        // Obtener datos del síntoma seleccionado
+        function getSelectedSymptomData(symptomName) {
+            return symptomsData.find(item => item.symptom === symptomName);
+        }
+
+        // Manejadores de eventos
+        symptomSelect.addEventListener('change', function() {
+            if (this.value) {
+                interpretationContainer.style.display = 'block';
+                userInterpretation.value = '';
+                checkForm();
+            } else {
+                interpretationContainer.style.display = 'none';
+                submitButton.style.display = 'none';
+            }
+        });
+
+        userInterpretation.addEventListener('input', checkForm);
+
+        function checkForm() {
+            if (symptomSelect.value && userInterpretation.value.trim() !== '') {
+                submitButton.style.display = 'block';
+            } else {
+                submitButton.style.display = 'none';
+            }
+        }
+
+        submitButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (!symptomSelect.value || !userInterpretation.value.trim()) {
+                return;
+            }
+            
+            const selectedSymptomData = getSelectedSymptomData(symptomSelect.value);
+            
+            // Rellenar los resultados
+            resultSymptom.textContent = selectedSymptomData.symptom;
+            resultUserInterpretation.textContent = userInterpretation.value;
+            resultCommonInterpretation.textContent = selectedSymptomData.commonInterpretation;
+            resultRealCause.textContent = selectedSymptomData.realCause;
+            
+            // Cambiar a la vista de resultados
+            formView.classList.remove('active');
+            resultsView.classList.add('active');
+        });
+
+        resetButton.addEventListener('click', function() {
+            // Reiniciar formulario
+            symptomSelect.value = '';
+            userInterpretation.value = '';
+            interpretationContainer.style.display = 'none';
+            submitButton.style.display = 'none';
+            
+            // Cambiar a la vista del formulario
+            resultsView.classList.remove('active');
+            formView.classList.add('active');
+        });
+
+        // Inicializar la aplicación
+        function initApp() {
+            loadSymptomOptions();
+            formView.classList.add('active');
+        }
+
+        // Iniciar la aplicación cuando el documento esté listo
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
